@@ -555,3 +555,47 @@ if __name__=="__main__":
         sys.argv.remove(sentinel_option)
         rc = main()
     sys.exit(rc)
+
+    
+import subprocess
+p = subprocess.Popen(['ping', '-c', '5', '127.0.0.1'],
+                     stdout=subprocess.PIPE,
+                     stderr=subprocess.STDOUT,
+                     bufsize=0)
+for line in iter(p.stdout.readline, b''):
+    print(">>> " + line.rstrip())
+for line in iter(p.stderr.readline, b''):
+    print(">>> " + line.rstrip())
+print 'code',p.returncode  
+
+import os
+import sys
+import subprocess
+import time
+
+cmd = ['ping','baidu.com']
+p = subprocess.Popen(cmd,
+                     stdout=subprocess.PIPE,
+                     stderr=subprocess.STDOUT)
+try:
+    # Filter stdout
+    for line in iter(p.stdout.readline, ''):
+        sys.stdout.flush()
+        # Print status
+        print(">>> " + line.rstrip())
+        sys.stdout.flush()
+except:
+    sys.stdout.flush()
+
+# Wait until process terminates (without using p.wait())
+while p.poll() is None:
+    # Process hasn't exited yet, let's wait some
+    time.sleep(0.5)
+
+# Get return code from process
+return_code = p.returncode
+
+print 'RETURN CODE', return_code
+
+# Exit with return code from process
+sys.exit(return_code)
